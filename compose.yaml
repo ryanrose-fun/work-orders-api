@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: workorders
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
+      POSTGRES_DB: workorders
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workorders"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://workorders:${DB_PASSWORD}@db/workorders
+      API_TOKEN: ${API_TOKEN:?Set API_TOKEN}
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  database:
