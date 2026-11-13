@@ -49,7 +49,25 @@ For running without Docker, set `DATABASE_URL=sqlite:///./local.db` and a genera
 
 Tests apply the actual migration and cover authentication, validation, persistence, state transitions, stale writes, simultaneous updates and missing records. Set `TEST_DATABASE_URL` to an **empty disposable PostgreSQL database** to exercise the same tests there; the fixture downgrades its schema after each test. GitHub Actions tests both databases and builds the Docker image.
 
-## API contract
+## React / TypeScript console
+
+![Work Orders React console](docs/console.png)
+
+Start the API above on port 8000, then in another terminal (Node 22.12+):
+
+```sh
+cd web
+npm ci
+npm run dev
+```
+
+Open http://127.0.0.1:5173 and enter the API token. Create orders, choose a legal next status, and save. Credentials remain in tab memory only. `npm test` checks validation, rejected credentials, uncertain creates and stale-update recovery; `npm run build` runs strict TypeScript checking and creates `web/dist`.
+
+To try a concurrent edit, open two tabs and load the same order. Save a status in the first, then attempt a change in the second. It shows a conflict instead of overwriting the first update. Reload that record and review before saving again. For a deployed static build, serve `/api/*` through a same-origin reverse proxy to FastAPI (strip `/api`); the Vite dev proxy is not a production server.
+
+Read the [engineering decisions and limits](docs/decisions.md).
+
+## API endpoints
 
 | Endpoint | Purpose |
 |---|---|

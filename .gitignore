@@ -5,3 +5,5 @@ __pycache__/
 *.db
 .env
 .test-tmp*/
+web/node_modules/
+web/dist/
